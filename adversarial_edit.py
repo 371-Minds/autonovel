@@ -6,7 +6,6 @@ What gets cut reveals what's weakest. The cut list IS the revision plan.
 Usage: python adversarial_edit.py 1        # single chapter
        python adversarial_edit.py all      # all chapters
 """
-import os
 import sys
 import json
 import re

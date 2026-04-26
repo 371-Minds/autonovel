@@ -7,11 +7,9 @@ Produces a true rank order from round-robin tournament.
 Usage: python compare_chapters.py          # full tournament
        python compare_chapters.py 1 10     # single matchup
 """
-import os
 import sys
 import json
 import re
-import random
 from pathlib import Path
 from datetime import datetime
 from dotenv import load_dotenv
