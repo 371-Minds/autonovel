@@ -50,6 +50,11 @@ const DEFAULT_PROVIDER_BINDINGS: ProviderBindingMap = {
   },
 };
 
+const DEFAULT_PROVIDER_BASE_URLS: Partial<Record<StoryforgeProviderId, string>> = {
+  hermes: 'http://localhost:8642',
+  'arch-gateway': 'http://localhost:8080',
+};
+
 const DEFAULT_MODELS: Record<StoryforgeProviderId, Record<ModelRole, string>> = {
   anthropic: {
     writer: 'claude-sonnet-4-6',
@@ -149,7 +154,7 @@ export function buildAiProviderConfig(options?: {
     provider: PROVIDER_LABELS[providerId],
     model,
     archGatewaySettings: {
-      baseUrl: env.ARCH_GATEWAY_URL || 'http://localhost:8080/v1',
+      baseUrl: env.ARCH_GATEWAY_URL || DEFAULT_PROVIDER_BASE_URLS['arch-gateway'] || '',
       apiKey: env.ARCH_GATEWAY_API_KEY || '',
     },
     cloudflareSettings: {
@@ -162,7 +167,7 @@ export function buildAiProviderConfig(options?: {
       baseUrl: env.AUTONOVEL_API_BASE_URL || 'https://api.anthropic.com',
     },
     hermesSettings: {
-      baseUrl: env.HERMES_API_BASE_URL || 'http://localhost:8642/v1',
+      baseUrl: env.HERMES_API_BASE_URL || DEFAULT_PROVIDER_BASE_URLS.hermes || '',
       apiKey: env.HERMES_API_KEY || '',
     },
     roleRouting,

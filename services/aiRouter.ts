@@ -16,6 +16,15 @@ interface TextGenerationRequest {
 
 const ANTHROPIC_VERSION = '2023-06-01';
 const DEFAULT_GEMINI_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta';
+const DEFAULT_MODELS = {
+  anthropic: 'claude-sonnet-4-6',
+  openAiCompatible: 'openai-compatible-model',
+  gemini: 'gemini-2.5-pro',
+} as const;
+const DEFAULT_OPENAI_BASE_URLS = {
+  hermes: 'http://localhost:8642',
+  archGateway: 'http://localhost:8080',
+} as const;
 const env = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env ?? {};
 
 export async function generateNarrative(
@@ -130,7 +139,7 @@ async function requestAnthropicText({
       'anthropic-version': ANTHROPIC_VERSION,
     },
     body: JSON.stringify({
-      model: config.model || config.roleRouting?.[config.role || 'writer']?.model || 'claude-sonnet-4-6',
+      model: config.model || config.roleRouting?.[config.role || 'writer']?.model || DEFAULT_MODELS.anthropic,
       max_tokens: 4096,
       temperature: 0.7,
       system: systemInstruction,
@@ -173,7 +182,7 @@ async function requestOpenAiCompatibleText(
       ...(apiKey ? { authorization: `Bearer ${apiKey}` } : {}),
     },
     body: JSON.stringify({
-      model: config.model || config.roleRouting?.[config.role || 'writer']?.model || 'openai-compatible-model',
+      model: config.model || config.roleRouting?.[config.role || 'writer']?.model || DEFAULT_MODELS.openAiCompatible,
       temperature: 0.7,
       max_tokens: 4096,
       response_format: responseFormat === 'json' ? { type: 'json_object' } : undefined,
@@ -206,7 +215,7 @@ async function requestGeminiText({
     throw new Error('API_KEY (or GEMINI_API_KEY / GOOGLE_API_KEY) is required for Gemini requests.');
   }
 
-  const model = config.model || config.roleRouting?.[config.role || 'writer']?.model || 'gemini-2.5-pro';
+  const model = config.model || config.roleRouting?.[config.role || 'writer']?.model || DEFAULT_MODELS.gemini;
   const endpoint = `${DEFAULT_GEMINI_BASE_URL}/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
   const response = await fetch(endpoint, {
     method: 'POST',
@@ -255,7 +264,7 @@ function composeNarrativePrompt(
     return prompt;
   }
 
-  const preview = file.data.length > 2000 ? `${file.data.slice(0, 2000)}…` : file.data;
+  const preview = file.data.length > 2000 ? `${file.data.slice(0, 2000)}...` : file.data;
   return [
     prompt,
     '',
@@ -289,12 +298,12 @@ function getOpenAiCompatibleSettings(
   switch (provider) {
     case 'hermes':
       return {
-        baseUrl: config.hermesSettings.baseUrl || env.HERMES_API_BASE_URL || 'http://localhost:8642/v1',
+        baseUrl: config.hermesSettings.baseUrl || env.HERMES_API_BASE_URL || DEFAULT_OPENAI_BASE_URLS.hermes,
         apiKey: config.hermesSettings.apiKey || env.HERMES_API_KEY || '',
       };
     case 'arch-gateway':
       return {
-        baseUrl: config.archGatewaySettings.baseUrl || env.ARCH_GATEWAY_URL || 'http://localhost:8080/v1',
+        baseUrl: config.archGatewaySettings.baseUrl || env.ARCH_GATEWAY_URL || DEFAULT_OPENAI_BASE_URLS.archGateway,
         apiKey: config.archGatewaySettings.apiKey || env.ARCH_GATEWAY_API_KEY || '',
       };
     case 'cloudflare-ai-gateway':
