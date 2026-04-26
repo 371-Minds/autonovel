@@ -8,24 +8,8 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { generateNarrative } from '../../services/aiRouter.js';
 import { queuePost } from '../../services/socialScheduler.js';
-import { AiProviderConfig } from '../../types.js';
-
-// Default AI provider configuration for MCP tools
-function getDefaultAiConfig(provider?: string): AiProviderConfig {
-  const providerType = provider || process.env.STORYFORGE_AI_PROVIDER || 'Gemini';
-  
-  return {
-    provider: providerType as AiProviderConfig['provider'],
-    archGatewaySettings: {
-      baseUrl: process.env.ARCH_GATEWAY_URL || 'http://localhost:8080',
-    },
-    cloudflareSettings: {
-      gatewayUrl: process.env.CLOUDFLARE_GATEWAY_URL || '',
-      apiToken: process.env.CLOUDFLARE_API_TOKEN || '',
-      model: process.env.CLOUDFLARE_MODEL || 'gemini-2.5-pro',
-    },
-  };
-}
+import { ModelRole } from '../../types.js';
+import { buildAiProviderConfig } from '../providerConfig.js';
 
 // Marketing SOPs from AGENTS.md
 const MARKETING_SOPS: Record<string, string> = {
@@ -69,6 +53,8 @@ const MARKETING_SOPS: Record<string, string> = {
  * Register marketing domain tools with the MCP server
  */
 export function registerMarketingTools(server: McpServer): void {
+  const roleSchema = z.enum(['writer', 'judge', 'review']);
+
   // Tool: marketing_generate_copy
   server.registerTool(
     'marketing_generate_copy',
@@ -77,14 +63,20 @@ export function registerMarketingTools(server: McpServer): void {
       inputSchema: {
         type: z.enum(['synopsis', 'social', 'campaign']).describe("The type of marketing copy to generate"),
         content: z.string().describe("The story content to base the marketing copy on"),
-        provider: z.string().optional().describe("Optional AI provider override (Gemini, Arch Gateway, Cloudflare AI Gateway)"),
+        role: roleSchema.optional().describe("Optional model role override (writer, judge, review)"),
+        provider: z.string().optional().describe("Optional AI provider override (Anthropic, Hermes, Gemini, Arch Gateway, Cloudflare AI Gateway)"),
+        model: z.string().optional().describe("Optional model override for the selected role/provider"),
       },
     },
-    async ({ type, content, provider }) => {
+    async ({ type, content, role, provider, model }) => {
       try {
-        const config = getDefaultAiConfig(provider);
+        const config = buildAiProviderConfig({
+          role: (role || 'writer') as ModelRole,
+          providerOverride: provider,
+          modelOverride: model,
+        });
         const systemInstruction = MARKETING_SOPS[type] || MARKETING_SOPS.synopsis;
-        
+
         const prompt = `Please generate marketing copy based on the following story content:\n\n${content}`;
         
         const result = await generateNarrative(prompt, systemInstruction, undefined, config);

@@ -17,24 +17,8 @@ import {
   queryRelationships,
   checkConsistency,
 } from '../../services/memoryStore.js';
-import { AiProviderConfig } from '../../types.js';
-
-// Default AI provider configuration for MCP tools
-function getDefaultAiConfig(provider?: string): AiProviderConfig {
-  const providerType = provider || process.env.STORYFORGE_AI_PROVIDER || 'Gemini';
-  
-  return {
-    provider: providerType as AiProviderConfig['provider'],
-    archGatewaySettings: {
-      baseUrl: process.env.ARCH_GATEWAY_URL || 'http://localhost:8080',
-    },
-    cloudflareSettings: {
-      gatewayUrl: process.env.CLOUDFLARE_GATEWAY_URL || '',
-      apiToken: process.env.CLOUDFLARE_API_TOKEN || '',
-      model: process.env.CLOUDFLARE_MODEL || 'gemini-2.5-pro',
-    },
-  };
-}
+import { ModelRole } from '../../types.js';
+import { buildAiProviderConfig } from '../providerConfig.js';
 
 
 
@@ -42,6 +26,8 @@ function getDefaultAiConfig(provider?: string): AiProviderConfig {
  * Register character domain tools with the MCP server
  */
 export function registerCharacterTools(server: McpServer): void {
+  const roleSchema = z.enum(['writer', 'judge', 'review']);
+
   // Tool: character_create
   server.registerTool(
     'character_create',
@@ -50,13 +36,19 @@ export function registerCharacterTools(server: McpServer): void {
       inputSchema: {
         prompt: z.string().describe("A brief description or concept for the character"),
         archetype: z.string().optional().describe("Optional archetype ID (hero, mentor, shadow, trickster, herald, shapeshifter, guardian, ally)"),
-        provider: z.string().optional().describe("Optional AI provider override (Gemini, Arch Gateway, Cloudflare AI Gateway)"),
+        role: roleSchema.optional().describe("Optional model role override (writer, judge, review)"),
+        provider: z.string().optional().describe("Optional AI provider override (Anthropic, Hermes, Gemini, Arch Gateway, Cloudflare AI Gateway)"),
+        model: z.string().optional().describe("Optional model override for the selected role/provider"),
       },
     },
-    async ({ prompt, archetype, provider }) => {
+    async ({ prompt, archetype, role, provider, model }) => {
       try {
-        const config = getDefaultAiConfig(provider);
-        
+        const config = buildAiProviderConfig({
+          role: (role || 'writer') as ModelRole,
+          providerOverride: provider,
+          modelOverride: model,
+        });
+
         // Enhance prompt with archetype context if provided
         const enhancedPrompt = archetype
           ? enhancePromptWithArchetype(prompt, archetype)

@@ -1,6 +1,6 @@
 # StoryForge AI: Creative Agent Directory
 
-**Developer Note:** This document provides the specifications for the *in-app creative agents* that users interact with. Your role is to implement the logic that calls the Gemini API according to these specifications. For the development process itself, refer to the `PROTOCOL.md`.
+**Developer Note:** This document provides the specifications for the *in-app creative agents* that users interact with. Your role is to implement the logic that calls the configured AI provider according to these specifications. For the development process itself, refer to the `PROTOCOL.md`.
 
 ---
 
@@ -17,7 +17,7 @@
     -   `file?: {mimeType: string, data: string}` (Optional context file)
     -   `config: AiProviderConfig` (The active AI provider configuration)
 -   **Output Contract**: A `string` containing the generated narrative in Markdown format.
--   **Provider Routing**: The `generateNarrative` service function acts as a router. It will forward the request to the backend specified in the `AiProviderConfig` (either Google Gemini or a custom Arch Gateway).
+-   **Provider Routing**: The `generateNarrative` service function acts as a router. It should respect role-based defaults (`writer`, `judge`, `review`) while allowing explicit provider/model overrides in `AiProviderConfig`.
 -   **Core Logic**: Concatenate the `Base SOP` with the chosen `Structural Framework SOP` to form the complete `systemInstruction`. If the "None" framework is selected, use only the `Base SOP`.
 -   **Context Injection**: When a project is active in the UI, a context block containing the project title, character list, and a summary of the plot/chapters should be prepended to the user's prompt. This allows the agent to generate more relevant and consistent content.
 
@@ -98,7 +98,7 @@ You must adhere to the following 6-part structure, using the physics parallels a
     -   `systemInstruction: string` (The agent's `baseSop`)
     -   `config: AiProviderConfig` (The active AI provider configuration)
 -   **Output Contract**: A `string` containing a project plan in Markdown format (e.g., a checklist).
--   **Provider Routing**: The `generateNarrative` service function acts as a router. It will forward the request to the backend specified in the `AiProviderConfig`.
+-   **Provider Routing**: The `generateNarrative` service function acts as a router. It should respect role-based defaults (`writer`, `judge`, `review`) while allowing explicit provider/model overrides in `AiProviderConfig`.
 -   **Core Logic**: Send the user's prompt with the `Base SOP` as the `systemInstruction`. The model is expected to return a structured plan.
 
 ### Base SOP (for `systemInstruction`)
@@ -126,7 +126,7 @@ You must adhere to the following 6-part structure, using the physics parallels a
     -   `systemInstruction: string` (The agent's `baseSop`).
     -   `config: AiProviderConfig` (The active AI provider configuration)
 -   **Output Contract**: A `string` containing lyrics and musical direction in Markdown format.
--   **Provider Routing**: The `generateNarrative` service function acts as a router. It will forward the request to the backend specified in the `AiProviderConfig`.
+-   **Provider Routing**: The `generateNarrative` service function acts as a router. It should respect role-based defaults (`writer`, `judge`, `review`) while allowing explicit provider/model overrides in `AiProviderConfig`.
 
 ### Base SOP (for `systemInstruction`)
 
@@ -153,7 +153,7 @@ You must adhere to the following 6-part structure, using the physics parallels a
     -   `systemInstruction: string` (The specific SOP for the desired marketing asset, e.g., "Synopsis SOP").
     -   `config: AiProviderConfig` (The active AI provider configuration)
 -   **Output Contract**: A `string` containing the marketing copy in Markdown format.
--   **Provider Routing**: The `generateNarrative` service function acts as a router. It will forward the request to the backend specified in the `AiProviderConfig`.
+-   **Provider Routing**: The `generateNarrative` service function acts as a router. It should respect role-based defaults (`writer`, `judge`, `review`) while allowing explicit provider/model overrides in `AiProviderConfig`.
 
 ### Agent 1: Synopsis Generator
 ```
@@ -223,7 +223,7 @@ You must adhere to the following 6-part structure, using the physics parallels a
     -   `prompt: string` (User's concept, e.g., "A grizzled space pirate with a secret heart of gold").
     -   `config: AiProviderConfig` (The active AI provider configuration)
 -   **Output Contract**: A `CharacterProfile` JSON object.
--   **Provider Routing**: The `generateCharacterProfile` service function acts as a router. It will forward the request to the backend specified in the `AiProviderConfig`.
+-   **Provider Routing**: The `generateCharacterProfile` service function acts as a router. It should respect role-based defaults (`writer`, `judge`, `review`) while allowing explicit provider/model overrides in `AiProviderConfig`.
 -   **Core Logic**: Use the `Base SOP` as the `systemInstruction` and configure the model to return a JSON object matching the `responseSchema`.
 
 ### Base SOP (for `systemInstruction`)

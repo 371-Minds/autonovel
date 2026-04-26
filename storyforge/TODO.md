@@ -88,6 +88,13 @@ This document tracks the development roadmap for StoryForge AI, organized by pri
 
 ---
 
+## V1.6 - Provider Role Routing
+
+-   [x] **Role-Based Provider Contract**: Added shared StoryForge provider/types definitions so UI and MCP can express provider by role, model by role, provider base URLs, and provider secret fields.
+-   [x] **MCP Role-Aware Config Defaults**: Refactored MCP narrative, character, and marketing tools to build AI config from shared role/provider/model settings instead of duplicating provider setup logic.
+
+---
+
 ## 🧹 Technical Debt & Quality of Life
 
 *Ongoing tasks to improve code quality, performance, and maintainability.*

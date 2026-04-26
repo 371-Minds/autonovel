@@ -102,7 +102,12 @@ The application supports multiple AI providers. The active provider is configure
 
 ### Supported Providers
 
--   **Gemini**: The default cloud-based provider. Uses the API key from the environment. All features are supported.
+-   **Anthropic**: Primary backend for writer and review roles in the Autonovel pipeline.
+    -   **Configuration**: Requires `ANTHROPIC_API_KEY` and `AUTONOVEL_API_BASE_URL`.
+-   **Hermes**: OpenAI-compatible backend used first for judge workloads.
+    -   **Configuration**: Requires `HERMES_API_BASE_URL` and optional `HERMES_API_KEY`.
+    -   **Image Generation**: The `generateImage` service is **not supported** with this provider.
+-   **Gemini**: Existing cloud-based StoryForge provider. All legacy text and image generation features remain valid.
 -   **Arch Gateway**: A local provider that connects to an OpenAI-compatible API, such as one provided by Arch Gateway or Ollama.
     -   **Configuration**: Requires a Base URL (e.g., `http://localhost:12000/v1`).
     -   **Image Generation**: The `generateImage` service is **not supported** with this provider.
@@ -110,18 +115,58 @@ The application supports multiple AI providers. The active provider is configure
     -   **Configuration**: Requires a Gateway URL, an API Token, and a model identifier (e.g., `@cf/meta/llama-3.1-8b-instruct`).
     -   **Image Generation**: The `generateImage` service is **not supported** with this provider.
 
+### Role-Based Routing
+
+StoryForge should be able to express the same role split as Autonovel:
+
+-   `writer`
+-   `judge`
+-   `review`
+
+The active provider can still be selected directly, but the shared config contract now also carries a role-to-provider map so UI and MCP consumers can resolve defaults from environment-backed role routing.
+
 ### `AiProviderConfig` Interface
 
 ```typescript
+type ModelRole = 'writer' | 'judge' | 'review';
+
+type StoryforgeProviderId =
+  | 'anthropic'
+  | 'hermes'
+  | 'gemini'
+  | 'arch-gateway'
+  | 'cloudflare-ai-gateway';
+
+interface ProviderRoute {
+  provider: StoryforgeProviderId;
+  model: string;
+}
+
 interface AiProviderConfig {
-  provider: 'Gemini' | 'Arch Gateway' | 'Cloudflare AI Gateway';
+  role?: ModelRole;
+  provider: 'Anthropic' | 'Hermes' | 'Gemini' | 'Arch Gateway' | 'Cloudflare AI Gateway';
+  model?: string;
   archGatewaySettings: {
     baseUrl: string;
+    apiKey?: string;
   };
   cloudflareSettings: {
     gatewayUrl: string;
     apiToken: string;
     model: string;
   };
+  anthropicSettings: {
+    apiKey: string;
+    baseUrl: string;
+  };
+  hermesSettings: {
+    baseUrl: string;
+    apiKey: string;
+  };
+  roleRouting?: Record<ModelRole, ProviderRoute>;
+  providerBindings?: Partial<Record<StoryforgeProviderId, {
+    apiKeyEnv?: string;
+    baseUrlEnv?: string;
+  }>>;
 }
 ```
