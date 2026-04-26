@@ -9,15 +9,22 @@ from typing import Any
 import httpx
 
 
+def _role_env_prefix(role: str) -> str:
+    normalized = role.strip().upper()
+    if not normalized or not normalized.replace("_", "").isalnum():
+        raise ValueError(f"Invalid model role: {role!r}")
+    return normalized
+
+
 def get_role_provider(role: str, default: str = "anthropic") -> str:
     """Resolve the configured provider for a model role."""
-    value = os.environ.get(f"AUTONOVEL_{role.upper()}_PROVIDER", default)
+    value = os.environ.get(f"AUTONOVEL_{_role_env_prefix(role)}_PROVIDER", default)
     return value.strip().lower() or default
 
 
 def get_role_model(role: str, default: str) -> str:
     """Resolve the configured model for a model role."""
-    value = os.environ.get(f"AUTONOVEL_{role.upper()}_MODEL", default)
+    value = os.environ.get(f"AUTONOVEL_{_role_env_prefix(role)}_MODEL", default)
     return value.strip() or default
 
 

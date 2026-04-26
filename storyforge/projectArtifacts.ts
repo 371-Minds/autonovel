@@ -58,6 +58,7 @@ const STORYFORGE_DIR = fileURLToPath(new URL('.', import.meta.url));
 const PROJECT_ROOT = fileURLToPath(new URL('..', import.meta.url));
 const PROJECT_ID = basename(PROJECT_ROOT);
 const PROJECT_ALIASES = new Set(['current', 'default', PROJECT_ID]);
+const CHARACTER_ID_IGNORED_QUOTES = /[\u0027\u2019]/g;
 
 export async function readProjectSnapshot(projectId: string): Promise<ProjectSnapshot | null> {
   if (!isKnownProjectId(projectId)) {
@@ -144,8 +145,8 @@ async function readChapters(): Promise<ChapterRecord[]> {
 
   const chapterFiles = filenames
     .map((filename) => {
-      const match = filename.match(/^ch_(\d+)\.md$/i);
-      return match ? { filename, number: Number.parseInt(match[1], 10) } : null;
+      const match = filename.match(/^ch_(\d+)\.md$/);
+      return match ? { filename, number: parseInt(match[1], 10) } : null;
     })
     .filter((entry): entry is { filename: string; number: number } => entry !== null)
     .sort((left, right) => left.number - right.number);
@@ -250,7 +251,7 @@ function normalizeCharacterId(value: string): string {
   return value
     .trim()
     .toLowerCase()
-    .replace(/[\u0027\u2019]/g, '')
+    .replace(CHARACTER_ID_IGNORED_QUOTES, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 }

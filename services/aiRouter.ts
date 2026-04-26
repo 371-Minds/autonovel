@@ -16,6 +16,7 @@ interface TextGenerationRequest {
 
 const ANTHROPIC_VERSION = '2023-06-01';
 const DEFAULT_GEMINI_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta';
+const MAX_FILE_PREVIEW_LENGTH = 2000;
 const DEFAULT_MODELS = {
   anthropic: 'claude-sonnet-4-6',
   openAiCompatible: 'openai-compatible-model',
@@ -273,7 +274,9 @@ function composeNarrativePrompt(
     return prompt;
   }
 
-  const preview = file.data.length > 2000 ? `${file.data.slice(0, 2000)}...` : file.data;
+  const preview = file.data.length > MAX_FILE_PREVIEW_LENGTH
+    ? `${file.data.slice(0, MAX_FILE_PREVIEW_LENGTH)}...`
+    : file.data;
   return [
     prompt,
     '',
