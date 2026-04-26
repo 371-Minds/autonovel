@@ -200,7 +200,10 @@ function parseCharactersDocument(markdown: string): CharacterRecord[] {
 }
 
 function stripHtmlComments(content: string): string {
-  return content.replace(/<!--[\s\S]*?-->/g, '');
+  return content
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<!--/g, '')
+    .replace(/-->/g, '');
 }
 
 function inferChapterTitle(content: string, chapterNumber: number): string {
