@@ -160,7 +160,7 @@ def _normalize_base_url(base: str, *, ensure_v1: bool) -> str:
     if ensure_v1 and not normalized.endswith("/v1"):
         return f"{normalized}/v1"
     if not ensure_v1 and normalized.endswith("/v1"):
-        return normalized[: -len("/v1")]
+        return normalized.removesuffix("/v1")
     return normalized
 
 
