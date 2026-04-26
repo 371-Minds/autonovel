@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-**Developer Note:** This document is the source of truth for all interactions with external AI services, as mandated by the **StoryCraft Protocol**. The `services/geminiService.ts` file is the concrete implementation of this contract. All frontend components must interact with the service layer through these defined functions.
+**Developer Note:** This document is the source of truth for all interactions with external AI services, as mandated by the **StoryCraft Protocol**. The `services/aiRouter.ts` file is the concrete implementation of this contract. All frontend components must interact with the service layer through these defined functions.
 
 This ensures a clear separation of concerns, predictable data flow, and a stable interface for AI capabilities, even if the underlying model or provider changes.
 
@@ -98,7 +98,7 @@ This ensures a clear separation of concerns, predictable data flow, and a stable
 
 ## 4. AI Provider Configuration
 
-The application supports multiple AI providers. The active provider is configured in the **Settings** view. The service functions within `services/geminiService.ts` (acting as a generic AI service router) now accept an `AiProviderConfig` object to determine which backend to call.
+The application supports multiple AI providers. The active provider is configured in the **Settings** view. The service functions within `services/aiRouter.ts` (acting as a generic AI service router) accept an `AiProviderConfig` object to determine which backend to call.
 
 ### Supported Providers
 

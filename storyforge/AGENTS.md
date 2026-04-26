@@ -10,7 +10,7 @@
 
 ### Developer Implementation Guide
 
--   **Service Function**: `generateNarrative` in `services/geminiService.ts`.
+-   **Service Function**: `generateNarrative` in `services/aiRouter.ts`.
 -   **Input Contract**:
     -   `userPrompt: string` (User's request)
     -   `systemInstruction: string` (The combined `baseSop` + selected `structuralFramework.sop`)
@@ -92,7 +92,7 @@ You must adhere to the following 6-part structure, using the physics parallels a
 
 ### Developer Implementation Guide
 
--   **Service Function**: `generateNarrative` in `services/geminiService.ts`.
+-   **Service Function**: `generateNarrative` in `services/aiRouter.ts`.
 -   **Input Contract**:
     -   `userPrompt: string` (User's high-level goal, e.g., "I want to write a sci-fi book.")
     -   `systemInstruction: string` (The agent's `baseSop`)
@@ -120,7 +120,7 @@ You must adhere to the following 6-part structure, using the physics parallels a
 
 ### Developer Implementation Guide
 
--   **Service Function**: `generateNarrative` in `services/geminiService.ts`.
+-   **Service Function**: `generateNarrative` in `services/aiRouter.ts`.
 -   **Input Contract**:
     -   `userPrompt: string` (User's request, including theme, style, and inspirations).
     -   `systemInstruction: string` (The agent's `baseSop`).
@@ -147,7 +147,7 @@ You must adhere to the following 6-part structure, using the physics parallels a
 
 ### Developer Implementation Guide
 
--   **Service Function**: `generateNarrative` in `services/geminiService.ts`.
+-   **Service Function**: `generateNarrative` in `services/aiRouter.ts`.
 -   **Input Contract**:
     -   `userPrompt: string` (The full text of the story or chapter).
     -   `systemInstruction: string` (The specific SOP for the desired marketing asset, e.g., "Synopsis SOP").
@@ -207,7 +207,7 @@ You must adhere to the following 6-part structure, using the physics parallels a
 
 ### Developer Implementation Guide
 
--   **Service Function**: `generateNarrative` / `generateNarrativeStream` in `services/geminiService.ts`.
+-   **Service Function**: `generateNarrative` / `generateNarrativeStream` in `services/aiRouter.ts`.
 -   **Core Logic**: Custom agents function identically to default agents but without pre-defined `Structural Frameworks`. The user-provided `Base SOP` is passed directly as the `systemInstruction` to the AI service, along with the active `AiProviderConfig`. These agents are stored in the user's browser via `localStorage`.
 
 ---
@@ -218,7 +218,7 @@ You must adhere to the following 6-part structure, using the physics parallels a
 
 ### Developer Implementation Guide
 
--   **Service Function**: `generateCharacterProfile` in `services/geminiService.ts`.
+-   **Service Function**: `generateCharacterProfile` in `services/aiRouter.ts`.
 -   **Input Contract**: 
     -   `prompt: string` (User's concept, e.g., "A grizzled space pirate with a secret heart of gold").
     -   `config: AiProviderConfig` (The active AI provider configuration)

@@ -8,6 +8,8 @@ import {
   StoryforgeProviderLabel,
 } from '../types.js';
 
+const env = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env ?? {};
+
 const PROVIDER_LABELS: Record<StoryforgeProviderId, StoryforgeProviderLabel> = {
   anthropic: 'Anthropic',
   hermes: 'Hermes',
@@ -89,9 +91,9 @@ function normalizeProviderId(
 }
 
 function getDefaultProviderForRole(role: ModelRole): StoryforgeProviderId {
-  const legacyProvider = process.env.STORYFORGE_AI_PROVIDER;
+  const legacyProvider = env.STORYFORGE_AI_PROVIDER;
   const fallback = normalizeProviderId(legacyProvider, 'gemini');
-  return normalizeProviderId(process.env[`AUTONOVEL_${role.toUpperCase()}_PROVIDER`], fallback);
+  return normalizeProviderId(env[`AUTONOVEL_${role.toUpperCase()}_PROVIDER`], fallback);
 }
 
 export function getRoleProvider(role: ModelRole): StoryforgeProviderId {
@@ -100,12 +102,12 @@ export function getRoleProvider(role: ModelRole): StoryforgeProviderId {
 
 export function getRoleModel(role: ModelRole, provider?: StoryforgeProviderId): string {
   const resolvedProvider = provider || getRoleProvider(role);
-  const envValue = process.env[`AUTONOVEL_${role.toUpperCase()}_MODEL`]?.trim();
+  const envValue = env[`AUTONOVEL_${role.toUpperCase()}_MODEL`]?.trim();
   if (envValue) {
     return envValue;
   }
 
-  const legacyModel = process.env.STORYFORGE_AI_MODEL?.trim();
+  const legacyModel = env.STORYFORGE_AI_MODEL?.trim();
   if (legacyModel) {
     return legacyModel;
   }
@@ -147,21 +149,21 @@ export function buildAiProviderConfig(options?: {
     provider: PROVIDER_LABELS[providerId],
     model,
     archGatewaySettings: {
-      baseUrl: process.env.ARCH_GATEWAY_URL || 'http://localhost:8080/v1',
-      apiKey: process.env.ARCH_GATEWAY_API_KEY || '',
+      baseUrl: env.ARCH_GATEWAY_URL || 'http://localhost:8080/v1',
+      apiKey: env.ARCH_GATEWAY_API_KEY || '',
     },
     cloudflareSettings: {
-      gatewayUrl: process.env.CLOUDFLARE_GATEWAY_URL || '',
-      apiToken: process.env.CLOUDFLARE_API_TOKEN || '',
-      model: process.env.CLOUDFLARE_MODEL || model,
+      gatewayUrl: env.CLOUDFLARE_GATEWAY_URL || '',
+      apiToken: env.CLOUDFLARE_API_TOKEN || '',
+      model: env.CLOUDFLARE_MODEL || model,
     },
     anthropicSettings: {
-      apiKey: process.env.ANTHROPIC_API_KEY || '',
-      baseUrl: process.env.AUTONOVEL_API_BASE_URL || 'https://api.anthropic.com',
+      apiKey: env.ANTHROPIC_API_KEY || '',
+      baseUrl: env.AUTONOVEL_API_BASE_URL || 'https://api.anthropic.com',
     },
     hermesSettings: {
-      baseUrl: process.env.HERMES_API_BASE_URL || 'http://localhost:8642/v1',
-      apiKey: process.env.HERMES_API_KEY || '',
+      baseUrl: env.HERMES_API_BASE_URL || 'http://localhost:8642/v1',
+      apiKey: env.HERMES_API_KEY || '',
     },
     roleRouting,
     providerBindings: DEFAULT_PROVIDER_BINDINGS,

@@ -92,6 +92,7 @@ This document tracks the development roadmap for StoryForge AI, organized by pri
 
 -   [x] **Role-Based Provider Contract**: Added shared StoryForge provider/types definitions so UI and MCP can express provider by role, model by role, provider base URLs, and provider secret fields.
 -   [x] **MCP Role-Aware Config Defaults**: Refactored MCP narrative, character, and marketing tools to build AI config from shared role/provider/model settings instead of duplicating provider setup logic.
+-   [x] **Shared AI Router Groundwork**: Added `services/aiRouter.ts` for provider-aware narrative, outline, and character generation and updated MCP server imports to point at the current module layout.
 
 ---
 
