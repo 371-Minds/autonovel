@@ -4,7 +4,7 @@
 
 Current repo env:
 
-- `/home/runner/work/autonovel/autonovel/.env.example`
+- `.env.example`
 
 Current state is Anthropic-first and single-base-url oriented.
 
@@ -33,7 +33,7 @@ HERMES_HEALTH_URL=http://localhost:8642/health
 
 ## StoryForge-side config additions
 
-The provider shape documented in `/home/runner/work/autonovel/autonovel/storyforge/SERVICES.md` should be expanded from:
+The provider shape documented in `storyforge/SERVICES.md` should be expanded from:
 
 - Gemini
 - Arch Gateway
@@ -66,10 +66,10 @@ Move judge-only scripts to the shared client.
 
 Order:
 
-1. `/home/runner/work/autonovel/autonovel/evaluate.py`
-2. `/home/runner/work/autonovel/autonovel/adversarial_edit.py`
-3. `/home/runner/work/autonovel/autonovel/compare_chapters.py`
-4. `/home/runner/work/autonovel/autonovel/reader_panel.py`
+1. `evaluate.py`
+2. `adversarial_edit.py`
+3. `compare_chapters.py`
+4. `reader_panel.py`
 
 ### Step 3
 
@@ -77,7 +77,7 @@ Leave review on Anthropic.
 
 Do not move:
 
-- `/home/runner/work/autonovel/autonovel/review.py`
+- `review.py`
 
 ### Step 4
 
@@ -119,7 +119,7 @@ Mitigation:
 
 Mitigation:
 
-- keep `/home/runner/work/autonovel/autonovel/review.py` on Anthropic in first rollout
+- keep `review.py` on Anthropic in first rollout
 
 ### Risk: StoryForge spec drift from backend
 

@@ -7,7 +7,7 @@ Define one provider contract that can be implemented on both sides:
 - Python for Autonovel
 - TypeScript for StoryForge
 
-The contract must preserve existing role separation in `/home/runner/work/autonovel/autonovel/.env.example` and support Hermes as judge-only first.
+The contract must preserve existing role separation in `.env.example` and support Hermes as judge-only first.
 
 ## Core concepts
 
@@ -228,9 +228,9 @@ That means existing code can be migrated in two stages:
 
 The first consumer of this contract should be the judge path in:
 
-- `/home/runner/work/autonovel/autonovel/evaluate.py`
-- `/home/runner/work/autonovel/autonovel/reader_panel.py`
-- `/home/runner/work/autonovel/autonovel/adversarial_edit.py`
-- `/home/runner/work/autonovel/autonovel/compare_chapters.py`
+- `evaluate.py`
+- `reader_panel.py`
+- `adversarial_edit.py`
+- `compare_chapters.py`
 
-`/home/runner/work/autonovel/autonovel/review.py` should stay on Anthropic in the first pass.
+`review.py` should stay on Anthropic in the first pass.

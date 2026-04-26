@@ -15,10 +15,10 @@
 
 The runnable pipeline already exists in Python:
 
-- `/home/runner/work/autonovel/autonovel/run_pipeline.py`
-- `/home/runner/work/autonovel/autonovel/draft_chapter.py`
-- `/home/runner/work/autonovel/autonovel/evaluate.py`
-- `/home/runner/work/autonovel/autonovel/review.py`
+- `run_pipeline.py`
+- `draft_chapter.py`
+- `evaluate.py`
+- `review.py`
 
 Autonovel already separates model roles:
 
@@ -30,15 +30,15 @@ Autonovel already separates model roles:
 
 The StoryForge side already describes provider-aware routing and agent contracts:
 
-- `/home/runner/work/autonovel/autonovel/storyforge/SERVICES.md`
-- `/home/runner/work/autonovel/autonovel/storyforge/AGENTS.md`
-- `/home/runner/work/autonovel/autonovel/storyforge/PROTOCOL.md`
-- `/home/runner/work/autonovel/autonovel/storyforge/server.ts`
+- `storyforge/SERVICES.md`
+- `storyforge/AGENTS.md`
+- `storyforge/PROTOCOL.md`
+- `storyforge/server.ts`
 
 But the MCP project/character resources are still scaffolds:
 
-- `/home/runner/work/autonovel/autonovel/storyforge/projects.ts`
-- `/home/runner/work/autonovel/autonovel/storyforge/characters.ts`
+- `storyforge/projects.ts`
+- `storyforge/characters.ts`
 
 ## Phase 1 objective
 
@@ -192,8 +192,8 @@ This means the first implementation should treat Hermes as an OpenAI-compatible 
 ## Deliverables produced in this phase
 
 1. This architecture file.
-2. `/home/runner/work/autonovel/autonovel/DEV/PHASE1_PROVIDER_CONTRACT.md`
-3. `/home/runner/work/autonovel/autonovel/DEV/PHASE1_ENV_AND_NEXT_STEPS.md`
+2. `DEV/PHASE1_PROVIDER_CONTRACT.md`
+3. `DEV/PHASE1_ENV_AND_NEXT_STEPS.md`
 
 ## Exit criteria for Phase 1
 

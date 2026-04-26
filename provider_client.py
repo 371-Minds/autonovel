@@ -140,17 +140,28 @@ def _generate_openai_compatible_text(
 
 
 def _anthropic_messages_url() -> str:
-    base = os.environ.get("AUTONOVEL_API_BASE_URL", "https://api.anthropic.com").rstrip("/")
-    if base.endswith("/v1"):
-        base = base[: -len("/v1")]
+    base = _normalize_base_url(
+        os.environ.get("AUTONOVEL_API_BASE_URL", "https://api.anthropic.com"),
+        ensure_v1=False,
+    )
     return f"{base}/v1/messages"
 
 
 def _hermes_chat_completions_url() -> str:
-    base = os.environ.get("HERMES_API_BASE_URL", "http://localhost:8642/v1").rstrip("/")
-    if not base.endswith("/v1"):
-        base = f"{base}/v1"
+    base = _normalize_base_url(
+        os.environ.get("HERMES_API_BASE_URL", "http://localhost:8642/v1"),
+        ensure_v1=True,
+    )
     return f"{base}/chat/completions"
+
+
+def _normalize_base_url(base: str, *, ensure_v1: bool) -> str:
+    normalized = base.rstrip("/")
+    if ensure_v1 and not normalized.endswith("/v1"):
+        return f"{normalized}/v1"
+    if not ensure_v1 and normalized.endswith("/v1"):
+        return normalized[: -len("/v1")]
+    return normalized
 
 
 def _extract_openai_message_text(content: Any) -> str:
