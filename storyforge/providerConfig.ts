@@ -160,7 +160,7 @@ export function buildAiProviderConfig(options?: {
     cloudflareSettings: {
       gatewayUrl: env.CLOUDFLARE_GATEWAY_URL || '',
       apiToken: env.CLOUDFLARE_API_TOKEN || '',
-      model: env.CLOUDFLARE_MODEL || model,
+      model: model || env.CLOUDFLARE_MODEL || '',
     },
     anthropicSettings: {
       apiKey: env.ANTHROPIC_API_KEY || '',

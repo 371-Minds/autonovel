@@ -149,7 +149,7 @@ def _anthropic_messages_url() -> str:
 
 def _hermes_chat_completions_url() -> str:
     base = _normalize_base_url(
-        os.environ.get("HERMES_API_BASE_URL", "http://localhost:8642/v1"),
+        os.environ.get("HERMES_API_BASE_URL", "http://localhost:8642"),
         ensure_v1=True,
     )
     return f"{base}/chat/completions"

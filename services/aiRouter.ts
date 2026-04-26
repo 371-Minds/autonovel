@@ -58,8 +58,13 @@ export async function generateBookOutline(
   });
 
   const parsed = parseJsonPayload<BookOutline>(raw);
-  if (!parsed.title || !parsed.synopsis || !Array.isArray(parsed.chapters)) {
-    throw new Error('Outline response did not match the expected schema.');
+  const missingOutlineFields = [
+    !parsed.title ? 'title' : null,
+    !parsed.synopsis ? 'synopsis' : null,
+    !Array.isArray(parsed.chapters) ? 'chapters' : null,
+  ].filter((field): field is string => Boolean(field));
+  if (missingOutlineFields.length > 0) {
+    throw new Error(`Outline response did not match the expected schema. Missing or invalid: ${missingOutlineFields.join(', ')}.`);
   }
 
   return {
@@ -87,8 +92,12 @@ export async function generateCharacterProfile(
   });
 
   const parsed = parseJsonPayload<Omit<CharacterProfile, 'id'>>(raw);
-  if (!parsed.name || !parsed.description) {
-    throw new Error('Character profile response did not match the expected schema.');
+  const missingCharacterFields = [
+    !parsed.name ? 'name' : null,
+    !parsed.description ? 'description' : null,
+  ].filter((field): field is string => Boolean(field));
+  if (missingCharacterFields.length > 0) {
+    throw new Error(`Character profile response did not match the expected schema. Missing or invalid: ${missingCharacterFields.join(', ')}.`);
   }
 
   return parsed;
@@ -367,5 +376,9 @@ function parseJsonPayload<T>(raw: string): T {
   const trimmed = raw.trim();
   const fencedMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i);
   const candidate = fencedMatch ? fencedMatch[1].trim() : trimmed;
-  return JSON.parse(candidate) as T;
+  try {
+    return JSON.parse(candidate) as T;
+  } catch (error) {
+    throw new Error(`Failed to parse provider JSON payload: ${error instanceof Error ? error.message : String(error)}`);
+  }
 }

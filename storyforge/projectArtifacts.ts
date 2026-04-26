@@ -200,10 +200,31 @@ function parseCharactersDocument(markdown: string): CharacterRecord[] {
 }
 
 function stripHtmlComments(content: string): string {
-  return content
-    .replace(/<!--[\s\S]*?-->/g, '')
-    .replace(/<!--/g, '')
-    .replace(/-->/g, '');
+  let result = '';
+  let index = 0;
+
+  while (index < content.length) {
+    const commentStart = content.indexOf('<!--', index);
+    if (commentStart === -1) {
+      result += content.slice(index);
+      break;
+    }
+
+    result += content.slice(index, commentStart);
+
+    const standardEnd = content.indexOf('-->', commentStart + 4);
+    const alternateEnd = content.indexOf('--!>', commentStart + 4);
+    const commentEndCandidates = [standardEnd, alternateEnd].filter((value) => value !== -1);
+
+    if (commentEndCandidates.length === 0) {
+      break;
+    }
+
+    const commentEnd = Math.min(...commentEndCandidates);
+    index = commentEnd + (commentEnd === alternateEnd ? 4 : 3);
+  }
+
+  return result;
 }
 
 function inferChapterTitle(content: string, chapterNumber: number): string {
@@ -229,7 +250,7 @@ function normalizeCharacterId(value: string): string {
   return value
     .trim()
     .toLowerCase()
-    .replace(/['’]/g, '')
+    .replace(/[\u0027\u2019]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 }
