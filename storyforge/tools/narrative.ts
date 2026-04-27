@@ -7,29 +7,15 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { generateNarrative, generateBookOutline } from '../../services/aiRouter.js';
-import { AiProviderConfig } from '../../types.js';
-
-// Default AI provider configuration for MCP tools
-function getDefaultAiConfig(provider?: string): AiProviderConfig {
-  const providerType = provider || process.env.STORYFORGE_AI_PROVIDER || 'Gemini';
-  
-  return {
-    provider: providerType as AiProviderConfig['provider'],
-    archGatewaySettings: {
-      baseUrl: process.env.ARCH_GATEWAY_URL || 'http://localhost:8080',
-    },
-    cloudflareSettings: {
-      gatewayUrl: process.env.CLOUDFLARE_GATEWAY_URL || '',
-      apiToken: process.env.CLOUDFLARE_API_TOKEN || '',
-      model: process.env.CLOUDFLARE_MODEL || 'gemini-2.5-pro',
-    },
-  };
-}
+import { ModelRole } from '../../types.js';
+import { buildAiProviderConfig } from '../providerConfig.js';
 
 /**
  * Register narrative domain tools with the MCP server
  */
 export function registerNarrativeTools(server: McpServer): void {
+  const roleSchema = z.enum(['writer', 'judge', 'review']);
+
   // Tool: narrative_generate_scene
   server.registerTool(
     'narrative_generate_scene',
@@ -42,12 +28,18 @@ export function registerNarrativeTools(server: McpServer): void {
           mimeType: z.string(),
           data: z.string(),
         }).optional().describe("Optional context file (image reference)"),
-        provider: z.string().optional().describe("Optional AI provider override (Gemini, Arch Gateway, Cloudflare AI Gateway)"),
+        role: roleSchema.optional().describe("Optional model role override (writer, judge, review)"),
+        provider: z.string().optional().describe("Optional AI provider override (Anthropic, Hermes, Gemini, Arch Gateway, Cloudflare AI Gateway)"),
+        model: z.string().optional().describe("Optional model override for the selected role/provider"),
       },
     },
-    async ({ prompt, systemInstruction, file, provider }) => {
+    async ({ prompt, systemInstruction, file, role, provider, model }) => {
       try {
-        const config = getDefaultAiConfig(provider);
+        const config = buildAiProviderConfig({
+          role: (role || 'writer') as ModelRole,
+          providerOverride: provider,
+          modelOverride: model,
+        });
         const result = await generateNarrative(prompt, systemInstruction, file, config);
         return {
           content: [
@@ -85,15 +77,21 @@ export function registerNarrativeTools(server: McpServer): void {
           mimeType: z.string(),
           data: z.string(),
         }).optional().describe("Optional context file (image reference)"),
-        provider: z.string().optional().describe("Optional AI provider override (Gemini, Arch Gateway, Cloudflare AI Gateway)"),
+        role: roleSchema.optional().describe("Optional model role override (writer, judge, review)"),
+        provider: z.string().optional().describe("Optional AI provider override (Anthropic, Hermes, Gemini, Arch Gateway, Cloudflare AI Gateway)"),
+        model: z.string().optional().describe("Optional model override for the selected role/provider"),
       },
     },
-    async ({ prompt, systemInstruction, chapterIndex, file, provider }) => {
+    async ({ prompt, systemInstruction, chapterIndex, file, role, provider, model }) => {
       try {
-        const config = getDefaultAiConfig(provider);
+        const config = buildAiProviderConfig({
+          role: (role || 'writer') as ModelRole,
+          providerOverride: provider,
+          modelOverride: model,
+        });
         // Enhance system instruction with chapter context
         const enhancedSystemInstruction = `${systemInstruction}\n\n## CHAPTER CONTEXT\nYou are writing Chapter ${chapterIndex + 1}. Ensure this chapter flows naturally from previous events and advances the overall narrative arc.`;
-        
+
         const result = await generateNarrative(prompt, enhancedSystemInstruction, file, config);
         return {
           content: [
@@ -121,16 +119,22 @@ export function registerNarrativeTools(server: McpServer): void {
   // Tool: narrative_generate_outline
   server.registerTool(
     'narrative_generate_outline',
-    {
-      description: 'Create story outline with act/chapter structure',
-      inputSchema: {
-        prompt: z.string().describe("The book concept or premise"),
-        provider: z.string().optional().describe("Optional AI provider override (Gemini, Arch Gateway, Cloudflare AI Gateway)"),
+      {
+        description: 'Create story outline with act/chapter structure',
+        inputSchema: {
+          prompt: z.string().describe("The book concept or premise"),
+          role: roleSchema.optional().describe("Optional model role override (writer, judge, review)"),
+          provider: z.string().optional().describe("Optional AI provider override (Anthropic, Hermes, Gemini, Arch Gateway, Cloudflare AI Gateway)"),
+          model: z.string().optional().describe("Optional model override for the selected role/provider"),
+        },
       },
-    },
-    async ({ prompt, provider }) => {
+    async ({ prompt, role, provider, model }) => {
       try {
-        const config = getDefaultAiConfig(provider);
+        const config = buildAiProviderConfig({
+          role: (role || 'writer') as ModelRole,
+          providerOverride: provider,
+          modelOverride: model,
+        });
         const result = await generateBookOutline(prompt, config);
         return {
           content: [

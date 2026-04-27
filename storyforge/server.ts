@@ -19,14 +19,14 @@ import { registerMarketingTools } from './tools/marketing.js';
 import { registerExportTools } from './tools/export.js';
 
 // Resource modules
-import { registerProjectResources } from './resources/projects.js';
-import { registerCharacterResources } from './resources/characters.js';
+import { registerProjectResources } from './projects.js';
+import { registerCharacterResources } from './characters.js';
 
 // Prompt modules
-import { registerMasterWriterPrompt } from './prompts/master_writer.js';
-import { registerCharacterBuilderPrompt } from './prompts/character_builder.js';
-import { registerMarketingAgentPrompt } from './prompts/marketing_agent.js';
-import { registerProjectOrchestratorPrompt } from './prompts/project_orchestrator.js';
+import { registerMasterWriterPrompt } from './agents/master_writer.js';
+import { registerCharacterBuilderPrompt } from './agents/character_builder.js';
+import { registerMarketingAgentPrompt } from './agents/marketing_agent.js';
+import { registerProjectOrchestratorPrompt } from './agents/project_orchestrator.js';
 
 /**
  * Creates and configures an MCP server with StoryForge tools.

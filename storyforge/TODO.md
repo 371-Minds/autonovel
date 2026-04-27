@@ -88,6 +88,16 @@ This document tracks the development roadmap for StoryForge AI, organized by pri
 
 ---
 
+## V1.6 - Provider Role Routing
+
+-   [x] **Role-Based Provider Contract**: Added shared StoryForge provider/types definitions so UI and MCP can express provider by role, model by role, provider base URLs, and provider secret fields.
+-   [x] **MCP Role-Aware Config Defaults**: Refactored MCP narrative, character, and marketing tools to build AI config from shared role/provider/model settings instead of duplicating provider setup logic.
+-   [x] **Shared AI Router Groundwork**: Added `services/aiRouter.ts` for provider-aware narrative, outline, and character generation and updated MCP server imports to point at the current module layout.
+-   [x] **Project-Backed MCP Resources**: Replaced StoryForge project and character resource scaffold payloads with reads from the current Autonovel working directory (`state.json`, `outline.md`, `characters.md`, `world.md`, `chapters/ch_*.md`).
+-   [x] **Review Follow-Up Hardening**: Added explicit Anthropic API key validation in the shared Python provider client and made working-directory MCP project reads resilient to alias mismatches and partial chapter I/O failures.
+
+---
+
 ## 🧹 Technical Debt & Quality of Life
 
 *Ongoing tasks to improve code quality, performance, and maintainability.*
