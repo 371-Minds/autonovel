@@ -1,5 +1,5 @@
 import { readdir, readFile, stat } from 'node:fs/promises';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 interface ProjectState {
@@ -57,6 +57,7 @@ export interface ProjectSnapshot {
 const STORYFORGE_DIR = fileURLToPath(new URL('.', import.meta.url));
 const PROJECT_ROOT = fileURLToPath(new URL('..', import.meta.url));
 const PROJECT_ID = 'autonovel';
+const PROJECT_ALIASES = new Set([PROJECT_ID, 'current', 'default', basename(PROJECT_ROOT).toLowerCase()]);
 const CHARACTER_ID_IGNORED_QUOTES = /[\u0027\u2019]/g;
 
 export async function readProjectSnapshot(projectId: string): Promise<ProjectSnapshot | null> {
@@ -113,7 +114,7 @@ export async function readProjectCharacter(projectId: string, characterId: strin
 
 function isKnownProjectId(projectId: string): boolean {
   const normalized = projectId.trim().toLowerCase();
-  return normalized.length > 0;
+  return PROJECT_ALIASES.has(normalized);
 }
 
 async function readStateFile(): Promise<ProjectState> {
