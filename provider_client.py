@@ -77,8 +77,12 @@ def _generate_anthropic_text(
     timeout: int,
     beta: str | None,
 ) -> str:
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+    if not api_key:
+        raise ValueError("ANTHROPIC_API_KEY is required for Anthropic requests")
+
     headers = {
-        "x-api-key": os.environ.get("ANTHROPIC_API_KEY", ""),
+        "x-api-key": api_key,
         "anthropic-version": "2023-06-01",
         "content-type": "application/json",
     }

@@ -1,5 +1,5 @@
 import { readdir, readFile, stat } from 'node:fs/promises';
-import { basename, join } from 'node:path';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 interface ProjectState {
@@ -56,8 +56,7 @@ export interface ProjectSnapshot {
 
 const STORYFORGE_DIR = fileURLToPath(new URL('.', import.meta.url));
 const PROJECT_ROOT = fileURLToPath(new URL('..', import.meta.url));
-const PROJECT_ID = basename(PROJECT_ROOT);
-const PROJECT_ALIASES = new Set(['current', 'default', PROJECT_ID]);
+const PROJECT_ID = 'autonovel';
 const CHARACTER_ID_IGNORED_QUOTES = /[\u0027\u2019]/g;
 
 export async function readProjectSnapshot(projectId: string): Promise<ProjectSnapshot | null> {
@@ -113,7 +112,8 @@ export async function readProjectCharacter(projectId: string, characterId: strin
 }
 
 function isKnownProjectId(projectId: string): boolean {
-  return PROJECT_ALIASES.has(projectId.trim().toLowerCase());
+  const normalized = projectId.trim().toLowerCase();
+  return normalized.length > 0;
 }
 
 async function readStateFile(): Promise<ProjectState> {
@@ -151,22 +151,28 @@ async function readChapters(): Promise<ChapterRecord[]> {
     .filter((entry): entry is { filename: string; number: number } => entry !== null)
     .sort((left, right) => left.number - right.number);
 
-  return Promise.all(
+  const chapters = await Promise.all(
     chapterFiles.map(async ({ filename, number }) => {
       const fullPath = join(chapterDir, filename);
-      const content = await readFile(fullPath, 'utf8');
-      const fileStat = await stat(fullPath);
+      try {
+        const content = await readFile(fullPath, 'utf8');
+        const fileStat = await stat(fullPath);
 
-      return {
-        number,
-        filename,
-        title: inferChapterTitle(content, number),
-        content,
-        wordCount: countWords(content),
-        updatedAt: fileStat.mtime.toISOString(),
-      };
+        return {
+          number,
+          filename,
+          title: inferChapterTitle(content, number),
+          content,
+          wordCount: countWords(content),
+          updatedAt: fileStat.mtime.toISOString(),
+        };
+      } catch {
+        return null;
+      }
     })
   );
+
+  return chapters.filter((chapter): chapter is ChapterRecord => chapter !== null);
 }
 
 async function readCharacters(): Promise<CharacterRecord[]> {
