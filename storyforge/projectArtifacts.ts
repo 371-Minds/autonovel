@@ -167,7 +167,10 @@ async function readChapters(): Promise<ChapterRecord[]> {
           wordCount: countWords(content),
           updatedAt: fileStat.mtime.toISOString(),
         };
-      } catch {
+      } catch (error) {
+        console.warn(
+          `Skipping unreadable chapter file '${filename}': ${error instanceof Error ? error.message : String(error)}`
+        );
         return null;
       }
     })
